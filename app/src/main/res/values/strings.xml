@@ -1,3 +1,72 @@
 <resources>
     <string name="app_name">MiCalendario</string>
+    <string name="login_access_title">Acceso</string>
+    <string name="login_button_text">Entrar</string>
+    <string name="login_support_text">Soporte y configuración</string>
+    <string name="login_app_version">Versión 1.2.0 Professional</string>
+    <string name="login_logo_description">Logo de MiCalendario</string>
+    <string name="login_subtitle">Rutinas visuales para niños con TEA</string>
+    <string name="profile_title">Perfil del Niño</string>
+    <string name="profile_name_label">Nombre:</string>
+    <string name="profile_age_label">Edad:</string>
+    <string name="profile_color_selection_title">Elige tu color favorito</string>
+    <string name="profile_color_selected_hint">Color seleccionado: %1$s</string>
+    <string name="profile_save_button">Guardar Cambios</string>
+    <string name="profile_update_success">Perfil actualizado con éxito</string>
+    <string name="profile_select_color_warning">Por favor, selecciona un color</string>
+    <string name="profile_back_description">Regresar</string>
+    <string name="profile_placeholder_name">Nombre</string>
+    <string name="profile_placeholder_age">Edad</string>
+    <string name="profile_avatar_placeholder">?</string>
+    <string name="profile_age_suffix">%1$d años</string>
+    <string name="report_title">Informe de Seguimiento</string>
+    <string name="report_summary_title">Resumen Semanal</string>
+    <string name="report_completed_label">Actividades Completadas: %1$d</string>
+    <string name="report_pending_label">Actividades Pendientes: %1$d</string>
+    <string name="report_independence_level">Nivel de Independencia: %1$d%%</string>
+    <string name="report_chart_title">Distribución de Actividades</string>
+    <string name="report_back_button">Volver al Panel</string>
+    <string name="report_range_title">Rango de Análisis</string>
+    <string name="report_range_today">Hoy</string>
+    <string name="report_range_week">Semana</string>
+    <string name="report_range_month">Mes</string>
+    <string name="report_summary_total">Total: %1$d actividades</string>
+    <string name="report_summary_today">Resumen de Hoy</string>
+    <string name="report_summary_weekly">Resumen Semanal</string>
+    <string name="report_summary_monthly">Resumen Mensual</string>
+    <string name="report_status_achieved">Logradas</string>
+    <string name="report_status_pending">Pendientes</string>
+    <string name="report_no_data">No hay actividades registradas en este rango</string>
+    <string name="report_independence_center">Logros\n%1$d%%</string>
+    <string name="task_add_title">Nueva Actividad</string>
+    <string name="task_edit_title">Editar Actividad</string>
+    <string name="task_hint_title">Título de la actividad</string>
+    <string name="task_hint_desc">Descripción (opcional)</string>
+    <string name="task_hint_time">Hora</string>
+    <string name="task_label_period">Periodo del día</string>
+    <string name="task_label_pictogram">Selecciona un pictograma</string>
+    <string name="task_button_save">Guardar Actividad</string>
+    <string name="task_button_update">Actualizar Actividad</string>
+    <string name="task_error_fields">Por favor, completa los campos requeridos</string>
+    <string name="hint_usuario">Usuario</string>
+    <string name="hint_password">Contraseña</string>
+    <string name="error_usuario_vacio">Ingrese usuario</string>
+    <string name="error_password_vacio">Ingrese contraseña</string>
+    <string name="error_password_corto">Mínimo 6 caracteres</string>
+    <string name="error_password_numero">Debe contener al menos un número</string>
+
+    <string name="filter_all">Todo</string>
+    <string name="filter_morning">Mañana</string>
+    <string name="filter_afternoon">Tarde</string>
+    <string name="filter_night">Noche</string>
+    <string name="main_change_date">Cambiar Fecha</string>
+    <string name="main_exit">Salir</string>
+    <string name="main_title">Mi Calendario</string>
+
+    <string-array name="periodos_array">
+        <item>Mañana</item>
+        <item>Tarde</item>
+        <item>Noche</item>
+    </string-array>
+
 </resources>

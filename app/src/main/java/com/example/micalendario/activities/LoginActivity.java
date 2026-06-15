@@ -15,16 +15,29 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.micalendario.R;
 import com.example.micalendario.database.SQLiteHelper;
 
+import com.google.android.material.textfield.TextInputLayout;
+
+import android.view.WindowManager;
+
+
 public class LoginActivity extends AppCompatActivity {
     EditText etUsuario, etPassword;
+    TextInputLayout tilUsuario, tilPassword;
     Button btnLogin;
-
     SQLiteHelper sqLiteHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // evita capturas de pantalla y grabacion para mayor seguridad de datos
+        getWindow().setFlags(
+                WindowManager.LayoutParams.FLAG_SECURE,
+                WindowManager.LayoutParams.FLAG_SECURE
+        );
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -33,49 +46,101 @@ public class LoginActivity extends AppCompatActivity {
 
         etUsuario = findViewById(R.id.etUsuario);
         etPassword = findViewById(R.id.etPassword);
+        tilUsuario = findViewById(R.id.tilUsuario);
+        tilPassword = findViewById(R.id.tilPassword);
         btnLogin = findViewById(R.id.btnLogin);
-
         sqLiteHelper = new SQLiteHelper(this);
-        sqLiteHelper.insertarUsuario("admin", "1234");
+
+        // roles de usuario (niño con tea, cuidador, terapeuta)
+        if(!sqLiteHelper.existeUsuario("admin")){
+
+            sqLiteHelper.insertarUsuario(
+                    "admin",
+                    "admin123",
+                    "cuidador"
+            );
+
+            sqLiteHelper.insertarUsuario(
+                    "nino",
+                    "123456",
+                    "nino"
+            );
+
+            sqLiteHelper.insertarUsuario(
+                    "terapeuta",
+                    "123456",
+                    "terapeuta"
+            );
+        }
+
+        if(!sqLiteHelper.existePerfil()){
+
+            sqLiteHelper.insertarPerfil(
+                    "Juan Pérez",
+                    8,
+                    "Azul"
+            );
+        }
 
         btnLogin.setOnClickListener(v -> {
+            String usuario = etUsuario.getText()
+                            .toString()
+                            .trim();
 
-            String usuario = etUsuario.getText().toString().trim();
-            String password = etPassword.getText().toString().trim();
+            String password = etPassword.getText()
+                            .toString()
+                            .trim();
 
-            if(usuario.isEmpty() || password.isEmpty()){
+            // Limpiar errores previos
+            tilUsuario.setError(null);
+            tilPassword.setError(null);
 
-                Toast.makeText(this,
-                        "Complete todos los campos",
-                        Toast.LENGTH_SHORT).show();
-
-            } else {
-
-                boolean existe = sqLiteHelper.validarUsuario(usuario, password);
-
-                if(existe){
-
-                    Toast.makeText(this,
-                            "Login correcto",
-                            Toast.LENGTH_SHORT).show();
-
-                    Intent intent = new Intent(LoginActivity.this,
-                            MainActivity.class);
-
-                    startActivity(intent);
-
-                    finish();
-
-                } else {
-
-                    Toast.makeText(this,
-                            "Usuario o contraseña incorrectos",
-                            Toast.LENGTH_SHORT).show();
-
+            // condicionales para el acceso (login)
+            if(usuario.isBlank()){
+                tilUsuario.setError(getString(R.string.error_usuario_vacio));
+                return;
+            }
+            if(password.isBlank()){
+                tilPassword.setError(getString(R.string.error_password_vacio));
+                return;
+            }
+            if(password.length() < 6){
+                tilPassword.setError(getString(R.string.error_password_corto));
+                return;
+            }
+            boolean tieneNumero = false;
+            for(char c : password.toCharArray()){
+                if(Character.isDigit(c)){
+                    tieneNumero = true;
+                    break;
                 }
-
+            }
+            if(!tieneNumero){
+                tilPassword.setError(getString(R.string.error_password_numero));
+                return;
             }
 
+
+            boolean existe = sqLiteHelper.validarUsuario(usuario, password);
+            String rol = sqLiteHelper.obtenerRolUsuario(usuario);
+            if(existe){
+                Toast.makeText(
+                        this,
+                        "Login correcto",
+                        Toast.LENGTH_SHORT
+                ).show();
+                Intent intent = new Intent(
+                                LoginActivity.this,
+                                MainActivity.class);
+                intent.putExtra("rol", rol);
+                startActivity(intent);
+                finish();
+            } else {
+                Toast.makeText(
+                        this,
+                        "Usuario o contraseña incorrectos",
+                        Toast.LENGTH_SHORT).show();
+            }
         });
     }
 }
