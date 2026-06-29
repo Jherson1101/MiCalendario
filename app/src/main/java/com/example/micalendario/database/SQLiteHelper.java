@@ -12,7 +12,7 @@ import java.util.List;
 
 public class SQLiteHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "MiCalendario.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 3;
 
     public SQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -45,6 +45,12 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "completada INTEGER, " +
                 "perfil_id INTEGER)";
         db.execSQL(createTasksTable);
+
+        String createCustomPictogramsTable = "CREATE TABLE pictogramas_personalizados (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "nombre TEXT, " +
+                "ruta TEXT)";
+        db.execSQL(createCustomPictogramsTable);
     }
 
     @Override
@@ -52,7 +58,34 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS usuarios");
         db.execSQL("DROP TABLE IF EXISTS perfiles");
         db.execSQL("DROP TABLE IF EXISTS actividades");
+        db.execSQL("DROP TABLE IF EXISTS pictogramas_personalizados");
         onCreate(db);
+    }
+
+    public void insertarPictogramaPersonalizado(String nombre, String ruta) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("nombre", nombre);
+        values.put("ruta", ruta);
+        db.insert("pictogramas_personalizados", null, values);
+        db.close();
+    }
+
+    public List<com.example.micalendario.models.Pictogram> obtenerPictogramasPersonalizados() {
+        List<com.example.micalendario.models.Pictogram> lista = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM pictogramas_personalizados", null);
+        if (cursor.moveToFirst()) {
+            do {
+                lista.add(new com.example.micalendario.models.Pictogram(
+                        cursor.getString(1), // nombre
+                        cursor.getString(2)  // ruta
+                ));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return lista;
     }
 
     public void insertarUsuario(String usuario, String password, String rol){
@@ -252,6 +285,26 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put("color", color);
         db.update("perfiles", values, null, null);
+        db.close();
+    }
+
+    public String obtenerRutaPictograma(String nombre) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT ruta FROM pictogramas_personalizados WHERE nombre=?", new String[]{nombre});
+        String ruta = null;
+        if (cursor.moveToFirst()) {
+            ruta = cursor.getString(0);
+        }
+        cursor.close();
+        db.close();
+        return ruta;
+    }
+
+    public void actualizarPassword(String usuario, String nuevaPassword) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("password", nuevaPassword);
+        db.update("usuarios", values, "usuario=?", new String[]{usuario});
         db.close();
     }
 }

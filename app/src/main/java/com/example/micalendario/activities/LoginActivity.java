@@ -129,6 +129,20 @@ public class LoginActivity extends AppCompatActivity {
                         "Login correcto",
                         Toast.LENGTH_SHORT
                 ).show();
+                // Guardar rol en SharedPreferences para el Widget
+                getSharedPreferences("MiCalendarioPrefs", MODE_PRIVATE)
+                        .edit()
+                        .putString("rol_actual", rol)
+                        .apply();
+
+                // Notificar al widget para que se actualice
+                Intent updateWidgetIntent = new Intent(this, com.example.micalendario.widgets.NextTaskWidget.class);
+                updateWidgetIntent.setAction(android.appwidget.AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+                int[] ids = android.appwidget.AppWidgetManager.getInstance(getApplication())
+                        .getAppWidgetIds(new android.content.ComponentName(getApplication(), com.example.micalendario.widgets.NextTaskWidget.class));
+                updateWidgetIntent.putExtra(android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+                sendBroadcast(updateWidgetIntent);
+
                 Intent intent = new Intent(
                                 LoginActivity.this,
                                 MainActivity.class);

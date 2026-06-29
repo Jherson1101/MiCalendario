@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools">
     <!-- permiso para enviar notificaciones al usuario -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
@@ -16,6 +19,12 @@
         <activity
             android:name=".activities.PerfilActivity"
             android:exported="false" />
+        <activity
+            android:name=".activities.ManagePictogramsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.SettingsActivity"
+            android:exported="false" />
         <!-- activity para mostrar reportes -->
         <activity
             android:name=".activities.ReporteActivity"
@@ -23,6 +32,19 @@
         <receiver
             android:name=".notifications.NotificationReceiver"
             android:exported="false" /> <!-- pantalla para editar las tareas -->
+
+        <!-- Widget para la siguiente tarea -->
+        <receiver
+            android:name=".widgets.NextTaskWidget"
+            android:exported="false"
+            android:label="Siguiente Tarea MiCalendario">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/next_task_widget_info" />
+        </receiver>
         <activity
             android:name=".activities.EditTaskActivity"
             android:exported="false" /> <!-- pantalla para agregar actividades -->

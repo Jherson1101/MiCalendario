@@ -4,50 +4,45 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.widget.LinearLayout;
 
-// librerias de androidX
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.micalendario.R;
 import com.example.micalendario.database.SQLiteHelper;
 import com.example.micalendario.models.Task;
+import com.example.micalendario.utils.NotificationHelper;
 
-// librerias para la alarma
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Intent;
-// libreria para manejo de fechas y horas
 import java.util.Calendar;
 
-// librerias para selector de hora y Spinner
 import android.app.TimePickerDialog;
 import android.widget.Spinner;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.view.View;
-import android.graphics.Color;
-
-import com.example.micalendario.utils.NotificationHelper;
 
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.android.material.card.MaterialCardView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import com.example.micalendario.adapters.PictogramAdapter;
+import com.example.micalendario.utils.PictogramUtils;
 
 public class AddTaskActivity extends AppCompatActivity {
     TextInputLayout tilTitulo, tilDescripcion, tilHora;
     EditText etTitulo, etDescripcion, etHora;
     Spinner spinnerPeriodo;
-    MaterialCardView cardDesayuno, cardDientes, cardEstudiar, cardJugar, cardDucha, cardDormir;
-    ImageView imgDesayuno, imgDientes, imgEstudiar, imgJugar, imgDucha, imgDormir;
+    RecyclerView rvPictogramas;
+    PictogramAdapter pictogramAdapter;
 
     Button btnGuardarTask;
     String pictogramaSeleccionado = "";
 
     SQLiteHelper sqLiteHelper;
-
     String fecha;
-    boolean modoOscuro = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,96 +56,37 @@ public class AddTaskActivity extends AppCompatActivity {
         etDescripcion = findViewById(R.id.etDescripcion);
         etHora = findViewById(R.id.etHora);
         spinnerPeriodo = findViewById(R.id.spinnerPeriodo);
-
-        cardDesayuno = findViewById(R.id.cardPictoDesayuno);
-        cardDientes = findViewById(R.id.cardPictoDientes);
-        cardEstudiar = findViewById(R.id.cardPictoEstudiar);
-        cardJugar = findViewById(R.id.cardPictoJugar);
-        cardDucha = findViewById(R.id.cardPictoDucha);
-        cardDormir = findViewById(R.id.cardPictoDormir);
-
-        imgDesayuno = findViewById(R.id.imgPictoDesayuno);
-        imgDientes = findViewById(R.id.imgPictoDientes);
-        imgEstudiar = findViewById(R.id.imgPictoEstudiar);
-        imgJugar = findViewById(R.id.imgPictoJugar);
-        imgDucha = findViewById(R.id.imgPictoDucha);
-        imgDormir = findViewById(R.id.imgPictoDormir);
-
+        rvPictogramas = findViewById(R.id.rvPictogramas);
         btnGuardarTask = findViewById(R.id.btnGuardarTask);
+        findViewById(R.id.btnBackAdd).setOnClickListener(v -> finish());
+
         sqLiteHelper = new SQLiteHelper(this);
         fecha = getIntent().getStringExtra("fecha");
-        
-        // Cargar preferencia de modo oscuro global
-        android.content.SharedPreferences prefs = getSharedPreferences("Configuracion", MODE_PRIVATE);
-        modoOscuro = prefs.getBoolean("modoOscuro", false);
 
-        aplicarModoOscuro();
+        configurarPictogramas();
 
-        // Configurar selección de pictogramas
-        cardDesayuno.setOnClickListener(v -> seleccionarPictograma("desayuno", cardDesayuno));
-        cardDientes.setOnClickListener(v -> seleccionarPictograma("dientes", cardDientes));
-        cardEstudiar.setOnClickListener(v -> seleccionarPictograma("estudiar", cardEstudiar));
-        cardJugar.setOnClickListener(v -> seleccionarPictograma("jugar", cardJugar));
-        cardDucha.setOnClickListener(v -> seleccionarPictograma("ducha", cardDucha));
-        cardDormir.setOnClickListener(v -> seleccionarPictograma("dormir", cardDormir));
-
-        // crea adaptador para llenar el spinner con datos del array XML
-        ArrayAdapter<CharSequence> adapter =
-                ArrayAdapter.createFromResource(
-                        this,
-                        R.array.periodos_array,
-                        android.R.layout.simple_spinner_item
-                );
-        // define el diseño desplegable del spinner
-        adapter.setDropDownViewResource(
-                android.R.layout.simple_spinner_dropdown_item
-        );
-
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                this, R.array.periodos_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerPeriodo.setAdapter(adapter);
-        // evento click del boton guardar
+
         btnGuardarTask.setOnClickListener(v -> guardarTask());
-        // evento click del campo hora
         etHora.setOnClickListener(v -> mostrarTimePicker());
     }
 
-    private void seleccionarPictograma(String nombre, MaterialCardView card) {
-        pictogramaSeleccionado = nombre;
-        // Limpiar selecciones previas
-        cardDesayuno.setStrokeWidth(0);
-        cardDientes.setStrokeWidth(0);
-        cardEstudiar.setStrokeWidth(0);
-        cardJugar.setStrokeWidth(0);
-        cardDucha.setStrokeWidth(0);
-        cardDormir.setStrokeWidth(0);
-
-        cardDesayuno.setCardElevation(2f);
-        cardDientes.setCardElevation(2f);
-        cardEstudiar.setCardElevation(2f);
-        cardJugar.setCardElevation(2f);
-        cardDucha.setCardElevation(2f);
-        cardDormir.setCardElevation(2f);
-
-        // Resaltar el seleccionado
-        card.setStrokeColor(getColor(R.color.blue_primary));
-        card.setStrokeWidth(4);
-        card.setCardElevation(8f);
+    private void configurarPictogramas() {
+        pictogramAdapter = new PictogramAdapter(PictogramUtils.getPictograms(this), pictogramaSeleccionado, pictogram -> {
+            pictogramaSeleccionado = pictogram.getName();
+        });
+        rvPictogramas.setAdapter(pictogramAdapter);
     }
 
-    private void aplicarModoOscuro() {
-        if (modoOscuro) {
-            findViewById(R.id.main_layout_add).setBackgroundColor(getColor(R.color.dark_background));
-            etTitulo.setTextColor(getColor(R.color.dark_text));
-            etTitulo.setHintTextColor(getColor(R.color.text_secondary));
-            etDescripcion.setTextColor(getColor(R.color.dark_text));
-            etDescripcion.setHintTextColor(getColor(R.color.text_secondary));
-            etHora.setTextColor(getColor(R.color.dark_text));
-            etHora.setHintTextColor(getColor(R.color.text_secondary));
-            ((TextView)findViewById(R.id.tvNuevaActividad)).setTextColor(getColor(R.color.dark_text));
-            ((TextView)findViewById(R.id.tvSeleccionaPicto)).setTextColor(getColor(R.color.dark_text));
+    private void actualizarSeleccionVisual() {
+        if (pictogramAdapter != null) {
+            pictogramAdapter.setSelectedPictogram(pictogramaSeleccionado);
         }
     }
 
-    // metodo que muestra el selector de hora
     private void mostrarTimePicker(){
         Calendar calendar = Calendar.getInstance();
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
@@ -158,25 +94,10 @@ public class AddTaskActivity extends AppCompatActivity {
         TimePickerDialog dialog = new TimePickerDialog(
                 this,
                 (view, selectedHour, selectedMinute) -> {
-                    String amPm = "AM";
-                    int hourFormat = selectedHour;
-                    if(selectedHour >= 12){
-                        amPm = "PM";
-                    }
-                    if(selectedHour > 12){
-                        hourFormat -= 12;
-                    }
-                    if(hourFormat == 0){
-                        hourFormat = 12;
-                    }
-                    String hora = String.format(
-                            "%02d:%02d %s",
-                            hourFormat,
-                            selectedMinute,
-                            amPm
-                    );
-
-                    etHora.setText(hora);
+                    String amPm = selectedHour >= 12 ? "PM" : "AM";
+                    int hourFormat = selectedHour > 12 ? selectedHour - 12 : (selectedHour == 0 ? 12 : selectedHour);
+                    String horaStr = String.format("%02d:%02d %s", hourFormat, selectedMinute, amPm);
+                    etHora.setText(horaStr);
                 },
                 hour,
                 minute,
@@ -185,9 +106,7 @@ public class AddTaskActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    // metodo para guardar la tarea
     private void guardarTask(){
-
         String titulo = etTitulo.getText().toString().trim();
         String descripcion = etDescripcion.getText().toString().trim();
         String hora = etHora.getText().toString().trim();
@@ -197,7 +116,6 @@ public class AddTaskActivity extends AppCompatActivity {
         tilTitulo.setError(null);
         tilHora.setError(null);
 
-        // validacion de campos vacios
         if(titulo.isEmpty()){
             tilTitulo.setError(getString(R.string.task_error_fields));
             error = true;
@@ -206,7 +124,6 @@ public class AddTaskActivity extends AppCompatActivity {
             tilHora.setError(getString(R.string.task_error_fields));
             error = true;
         }
-        
         if (pictogramaSeleccionado.isEmpty()) {
             Toast.makeText(this, getString(R.string.profile_select_color_warning), Toast.LENGTH_SHORT).show();
             error = true;
@@ -214,106 +131,76 @@ public class AddTaskActivity extends AppCompatActivity {
 
         if (error) return;
 
-        Task task = new Task(
-                0,
-                titulo,
-                descripcion,
-                fecha,
-                hora,
-                periodo,
-                pictogramaSeleccionado,
-                0,
-                1
-        );
-
+        Task task = new Task(0, titulo, descripcion, fecha, hora, periodo, pictogramaSeleccionado, 0, 1);
         sqLiteHelper.insertarTask(task);
-        // para notificar alertas de cambios(agregar, editar, eliminar)
-        NotificationHelper.mostrarNotificacion(
-                this,
-                "Actividad creada",
-                titulo + " - " + hora
-        );
-
-        // programa notificacion recordatorio
+        
+        // Notificar al widget para que se actualice tras agregar una nueva tarea
+        Intent intentUpdate = new Intent(this, com.example.micalendario.widgets.NextTaskWidget.class);
+        intentUpdate.setAction(android.appwidget.AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        int[] ids = android.appwidget.AppWidgetManager.getInstance(getApplication())
+                .getAppWidgetIds(new android.content.ComponentName(getApplication(), com.example.micalendario.widgets.NextTaskWidget.class));
+        intentUpdate.putExtra(android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+        sendBroadcast(intentUpdate);
+        
+        NotificationHelper.mostrarNotificacion(this, "Actividad creada", titulo + " - " + hora);
         programarNotificacion(titulo, hora, pictogramaSeleccionado);
-        Toast.makeText(this,
-                "Actividad guardada",
-                Toast.LENGTH_SHORT).show();
+        
+        Toast.makeText(this, "Actividad guardada", Toast.LENGTH_SHORT).show();
         finish();
     }
-    // metodo encargado de programar notificaciones
+
     private void programarNotificacion(String titulo, String hora, String pictograma){
-
         try{
-
-            Intent intent = new Intent(
-                    this,
-                    com.example.micalendario.notifications.NotificationReceiver.class
-            );
-
-            intent.putExtra("titulo", titulo);
-            intent.putExtra("pictograma", pictograma);
-
-            PendingIntent pendingIntent =
-                    PendingIntent.getBroadcast(
-                            this,
-                            (int) System.currentTimeMillis(),
-                            intent,
-                            PendingIntent.FLAG_UPDATE_CURRENT |
-                                    PendingIntent.FLAG_IMMUTABLE
-                    );
-
-            AlarmManager alarmManager =
-                    (AlarmManager) getSystemService(ALARM_SERVICE);
-
+            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+            
+            // 1. Calcular el tiempo base
             Calendar calendar = Calendar.getInstance();
-
             String[] partes = hora.split(" ");
-
             String[] tiempo = partes[0].split(":");
-
             int hour = Integer.parseInt(tiempo[0]);
             int minute = Integer.parseInt(tiempo[1]);
+            String amPm = partes[1];
 
-            String periodo = partes[1];
-
-            if(periodo.equalsIgnoreCase("PM") && hour != 12){
-                hour += 12;
-            }
-
-            if(periodo.equalsIgnoreCase("AM") && hour == 12){
-                hour = 0;
-            }
+            if(amPm.equalsIgnoreCase("PM") && hour != 12) hour += 12;
+            if(amPm.equalsIgnoreCase("AM") && hour == 12) hour = 0;
 
             calendar.set(Calendar.HOUR_OF_DAY, hour);
             calendar.set(Calendar.MINUTE, minute);
             calendar.set(Calendar.SECOND, 0);
+            
+            if(calendar.before(Calendar.getInstance())) calendar.add(Calendar.DAY_OF_MONTH, 1);
 
-            if(calendar.before(Calendar.getInstance())){
-                calendar.add(Calendar.DAY_OF_MONTH, 1);
+            // 2. Programar notificación de ANTICIPACIÓN (5 minutos antes) - HU 4
+            Calendar calendarAnticipacion = (Calendar) calendar.clone();
+            calendarAnticipacion.add(Calendar.MINUTE, -5);
+            
+            if (calendarAnticipacion.after(Calendar.getInstance())) {
+                Intent intentAnt = new Intent(this, com.example.micalendario.notifications.NotificationReceiver.class);
+                intentAnt.putExtra("titulo", titulo);
+                intentAnt.putExtra("pictograma", pictograma);
+                intentAnt.putExtra("esAnticipacion", true);
+
+                PendingIntent pendingAnt = PendingIntent.getBroadcast(
+                        this, (int) System.currentTimeMillis() + 1, intentAnt,
+                        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+                
+                alarmManager.set(AlarmManager.RTC_WAKEUP, calendarAnticipacion.getTimeInMillis(), pendingAnt);
             }
 
-            alarmManager.set(
-                    AlarmManager.RTC_WAKEUP,
-                    calendar.getTimeInMillis(),
-                    pendingIntent
-            );
+            // 3. Programar notificación de MOMENTO EXACTO - HU 5
+            Intent intentExacto = new Intent(this, com.example.micalendario.notifications.NotificationReceiver.class);
+            intentExacto.putExtra("titulo", titulo);
+            intentExacto.putExtra("pictograma", pictograma);
+            intentExacto.putExtra("esAnticipacion", false);
 
-            Toast.makeText(
-                    this,
-                    "Recordatorio programado",
-                    Toast.LENGTH_SHORT
-            ).show();
+            PendingIntent pendingExacto = PendingIntent.getBroadcast(
+                    this, (int) System.currentTimeMillis() + 2, intentExacto,
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+            alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingExacto);
 
         } catch (Exception e){
-
             e.printStackTrace();
-
-            Toast.makeText(
-                    this,
-                    "Error al programar notificación",
-                    Toast.LENGTH_LONG
-            ).show();
         }
     }
 }

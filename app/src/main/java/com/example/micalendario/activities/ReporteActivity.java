@@ -45,7 +45,7 @@ public class ReporteActivity extends AppCompatActivity {
     ImageButton btnBack;
     
     MaterialButton btnHoy, btnSemana, btnMes;
-    TextView tvSummaryTitle, tvRangoTitle;
+    TextView tvSummaryTitle;
 
     SQLiteHelper sqLiteHelper;
     boolean modoOscuro = false;
@@ -79,18 +79,11 @@ public class ReporteActivity extends AppCompatActivity {
         btnSemana = findViewById(R.id.btnSemana);
         btnMes = findViewById(R.id.btnMes);
         tvSummaryTitle = findViewById(R.id.tvSummaryTitle);
-        tvRangoTitle = findViewById(R.id.tvRangoTitle);
         
         sqLiteHelper = new SQLiteHelper(this);
         
-        if (modoOscuro) {
-            findViewById(R.id.main_reporte).setBackgroundColor(getColor(R.color.dark_background));
-            tvCompletadas.setTextColor(getColor(R.color.dark_text));
-            tvPendientes.setTextColor(getColor(R.color.dark_text));
-            tvPorcentaje.setTextColor(getColor(R.color.blue_primary));
-            tvSummaryTitle.setTextColor(getColor(R.color.dark_text));
-            tvRangoTitle.setTextColor(getColor(R.color.dark_text));
-        }
+        // El modo oscuro se maneja vía recursos DayNight para colores de UI.
+        // Mantenemos la variable modoOscuro solo para configuraciones especiales como el PieChart
 
         btnHoy.setOnClickListener(v -> cargarInforme("hoy"));
         btnSemana.setOnClickListener(v -> cargarInforme("semana"));
@@ -138,10 +131,10 @@ public class ReporteActivity extends AppCompatActivity {
         if (total > 0) {
             porcentaje = (completadas * 100) / total;
         }
-        // muestra cantidad completadas con etiquetas descriptivas
-        tvCompletadas.setText(getString(R.string.report_completed_label, completadas));
-        tvPendientes.setText(getString(R.string.report_pending_label, pendientes));
-        tvPorcentaje.setText(getString(R.string.report_independence_level, porcentaje));
+        // muestra cantidad completadas en las nuevas tarjetas
+        tvCompletadas.setText(getString(R.string.report_completed_count, completadas));
+        tvPendientes.setText(getString(R.string.report_pending_count, pendientes));
+        tvPorcentaje.setText(getString(R.string.report_percentage_value, porcentaje));
         progressBarInforme.setProgress(porcentaje, true);
 
         // se crea el grafico circular
@@ -174,7 +167,7 @@ public class ReporteActivity extends AppCompatActivity {
 
         if (modoOscuro) {
             pieChart.setCenterTextColor(Color.WHITE);
-            pieChart.setHoleColor(Color.parseColor("#121212"));
+            pieChart.setHoleColor(getColor(R.color.background)); // Usar color de fondo del tema
             pieChart.getLegend().setTextColor(Color.WHITE);
             pieChart.setEntryLabelColor(Color.WHITE);
         } else {
@@ -189,10 +182,12 @@ public class ReporteActivity extends AppCompatActivity {
     }
 
     private void marcarBotonActivo(String rango) {
-        // Resetear estilos
+        // Resetear estilos con colores dinámicos para mejor contraste
         int colorNormal = getColor(R.color.blue_light);
-        int colorTextoNormal = getColor(R.color.blue_primary);
-        int colorActivo = getColor(R.color.blue_primary);
+        int colorTextoNormal = getColor(R.color.text_secondary);
+        
+        // Ajuste de contraste para el botón activo
+        int colorActivo = modoOscuro ? getColor(R.color.blue_dark) : getColor(R.color.blue_primary);
         int colorTextoActivo = Color.WHITE;
 
         btnHoy.setBackgroundTintList(android.content.res.ColorStateList.valueOf(colorNormal));

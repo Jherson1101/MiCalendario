@@ -1,85 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<com.google.android.material.card.MaterialCardView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/cardTask"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="16dp"
-    android:layout_marginEnd="16dp"
-    android:layout_marginTop="10dp"
-    android:layout_marginBottom="10dp"
+    android:orientation="vertical">
 
-    android:clickable="true"
-    android:focusable="true"
-    android:foreground="?attr/selectableItemBackground"
-
-    app:cardCornerRadius="16dp"
-    app:cardElevation="2dp"
-    app:strokeWidth="0dp">
-
-    <LinearLayout
+    <TextView
+        android:id="@+id/tvHeaderFecha"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center_vertical">
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="4dp"
+        android:text="Lunes, 24 de Junio"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/text_secondary"
+        android:visibility="gone"/>
 
-        <ImageView
-            android:id="@+id/imgTask"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:scaleType="centerInside"
-            android:contentDescription="Pictograma de actividad"
-            android:src="@drawable/desayuno"
-            android:padding="4dp"/>
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardTask"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="2dp"
+        app:strokeWidth="0dp">
 
-        <!-- contenido -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_marginStart="16dp">
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_vertical">
 
-            <TextView
-                android:id="@+id/tvTituloTask"
+            <ImageView
+                android:id="@+id/imgTask"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:scaleType="centerInside"
+                android:contentDescription="Pictograma de actividad"
+                android:src="@drawable/desayuno"
+                android:padding="4dp"/>
+
+            <!-- contenido -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="16dp">
+
+                <TextView
+                    android:id="@+id/tvTituloTask"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Desayunar"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary"/>
+
+                <TextView
+                    android:id="@+id/tvDescripcionTask"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tomar desayuno saludable"
+                    android:textSize="14sp"
+                    android:textColor="@color/text_secondary"
+                    android:layout_marginTop="2dp"/>
+
+                <TextView
+                    android:id="@+id/tvHoraTask"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="08:00 AM"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/blue_primary"
+                    android:layout_marginTop="4dp"/>
+            </LinearLayout>
+
+            <!-- check -->
+            <CheckBox
+                android:id="@+id/checkCompletada"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Desayunar"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary"/>
-
-            <TextView
-                android:id="@+id/tvDescripcionTask"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tomar desayuno saludable"
-                android:textSize="14sp"
-                android:textColor="@color/text_secondary"
-                android:layout_marginTop="2dp"/>
-
-            <TextView
-                android:id="@+id/tvHoraTask"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="08:00 AM"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="@color/blue_primary"
-                android:layout_marginTop="4dp"/>
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:clickable="true"/>
         </LinearLayout>
 
-        <!-- check -->
-        <CheckBox
-            android:id="@+id/checkCompletada"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:focusable="false"
-            android:focusableInTouchMode="false"
-            android:clickable="true"/>
-    </LinearLayout>
-
-</com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.card.MaterialCardView>
+</LinearLayout>

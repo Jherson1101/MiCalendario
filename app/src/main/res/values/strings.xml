@@ -38,6 +38,11 @@
     <string name="report_status_pending">Pendientes</string>
     <string name="report_no_data">No hay actividades registradas en este rango</string>
     <string name="report_independence_center">Logros\n%1$d%%</string>
+    <string name="report_summary_label">Resumen</string>
+    <string name="report_independence_label">Independencia</string>
+    <string name="report_completed_count">%1$d</string>
+    <string name="report_pending_count">%1$d</string>
+    <string name="report_percentage_value">%1$d%%</string>
     <string name="task_add_title">Nueva Actividad</string>
     <string name="task_edit_title">Editar Actividad</string>
     <string name="task_hint_title">Título de la actividad</string>
@@ -62,6 +67,55 @@
     <string name="main_change_date">Cambiar Fecha</string>
     <string name="main_exit">Salir</string>
     <string name="main_title">Mi Calendario</string>
+
+    <string name="settings_title">Configuración</string>
+    <string name="settings_theme_mode">Modo Oscuro</string>
+    <string name="settings_change_password">Cambiar contraseña</string>
+    <string name="settings_colors_pictograms">Colores y pictogramas</string>
+    <string name="settings_storage">Almacenamiento</string>
+    <string name="settings_local_storage">Storage local</string>
+    <string name="settings_appearance_section">Apariencia</string>
+    <string name="settings_account_section">Cuenta y Datos</string>
+    <string name="settings_current_password">Contraseña actual</string>
+    <string name="settings_new_password">Nueva contraseña</string>
+    <string name="settings_confirm_password">Confirmar nueva contraseña</string>
+    <string name="settings_password_changed_success">Contraseña cambiada con éxito</string>
+    <string name="settings_password_incorrect">La contraseña actual es incorrecta</string>
+    <string name="settings_passwords_dont_match">Las contraseñas no coinciden</string>
+
+    <string name="settings_logout">Cerrar Sesión</string>
+    <string name="settings_logout_confirm">¿Estás seguro de que quieres cerrar sesión?</string>
+    <string name="settings_logout_yes">Sí, salir</string>
+    <string name="settings_logout_no">Cancelar</string>
+
+    <string name="nav_home">Inicio</string>
+    <string name="nav_month">Mes</string>
+    <string name="nav_week">Semana</string>
+    <string name="nav_list">Lista</string>
+
+    <!-- Etiquetas de Pictogramas -->
+    <string name="picto_desayuno">Desayuno</string>
+    <string name="picto_lavar_dientes">Dientes</string>
+    <string name="picto_lavar_manos">Manos</string>
+    <string name="picto_vestirse">Vestirse</string>
+    <string name="picto_almuerzo">Almuerzo</string>
+    <string name="picto_merienda">Merienda</string>
+    <string name="picto_cena">Cena</string>
+    <string name="picto_colegio">Colegio</string>
+    <string name="picto_estudiar">Estudiar</string>
+    <string name="picto_tareas">Tareas</string>
+    <string name="picto_terapia">Terapia</string>
+    <string name="picto_medicina">Medicina</string>
+    <string name="picto_ejercicio">Ejercicio</string>
+    <string name="picto_higiene">Higiene</string>
+    <string name="picto_ducha">Ducha</string>
+    <string name="picto_parque">Parque</string>
+    <string name="picto_jugar">Jugar</string>
+    <string name="picto_juegos">Juegos</string>
+    <string name="picto_ocio">Ocio</string>
+    <string name="picto_lectura">Lectura</string>
+    <string name="picto_ver_tele">Ver TV</string>
+    <string name="picto_dormir">Dormir</string>
 
     <string-array name="periodos_array">
         <item>Mañana</item>

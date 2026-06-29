@@ -35,14 +35,15 @@ import android.view.View;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Calendar;
+import androidx.appcompat.app.AppCompatDelegate;
 
 public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerTasks;
     List<Task> listaTasks;
     TaskAdapter taskAdapter;
     FloatingActionButton fabAgregar;
-    Button btnSeleccionarFecha, btnCerrarSesion;
-    ImageButton btnModoOscuro, btnInformes, btnPerfil;
+    com.google.android.material.bottomnavigation.BottomNavigationView bottomNavigation;
+    ImageButton btnSettings, btnInformes, btnPerfil;
     Button btnFiltroTodo, btnFiltroManana, btnFiltroTarde, btnFiltroNoche;
     TextView tvBienvenida, tvFecha;
     SQLiteHelper sqLiteHelper;
@@ -56,16 +57,13 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         rol = getIntent().getStringExtra("rol");
+        if (rol == null) rol = "usuario"; // Valor por defecto para evitar errores
         pedirPermisoNotificaciones();
 
         // Cargar preferencia de modo oscuro
         android.content.SharedPreferences prefs = getSharedPreferences("Configuracion", MODE_PRIVATE);
         modoOscuro = prefs.getBoolean("modoOscuro", false);
-        // Aplicar inmediatamente si estaba activo
-        if (modoOscuro) {
-            // Usamos post para asegurar que la UI esté lista
-            findViewById(R.id.main).post(() -> actualizarInterfazModoOscuro());
-        }
+        AppCompatDelegate.setDefaultNightMode(modoOscuro ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -74,11 +72,10 @@ public class MainActivity extends AppCompatActivity {
         });
         recyclerTasks = findViewById(R.id.recyclerTasks);
         fabAgregar = findViewById(R.id.fabAgregar);
-        btnSeleccionarFecha = findViewById(R.id.btnSeleccionarFecha);
-        btnModoOscuro = findViewById(R.id.btnModoOscuro);
+        bottomNavigation = findViewById(R.id.bottomNavigation);
+        btnSettings = findViewById(R.id.btnSettings);
         btnInformes = findViewById(R.id.btnInformes);
         btnPerfil = findViewById(R.id.btnPerfil);
-        btnCerrarSesion = findViewById(R.id.btnCerrarSesion);
         tvBienvenida = findViewById(R.id.tvBienvenida);
         tvFecha = findViewById(R.id.tvFecha);
 
@@ -128,11 +125,34 @@ public class MainActivity extends AppCompatActivity {
         taskAdapter = new TaskAdapter(this, listaTasks, rol, modoOscuro);
         recyclerTasks.setAdapter(taskAdapter);
 
-        // boton de cierre de sesión
-        btnCerrarSesion.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-            startActivity(intent);
-            finish();
+        // Listener para la barra de navegación inferior
+        bottomNavigation.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_home) {
+                findViewById(R.id.tvFecha).setVisibility(View.VISIBLE);
+                findViewById(R.id.layoutFiltros).setVisibility(View.VISIBLE);
+                actualizarSaludoYFecha();
+                cargarTasksPorFecha(obtenerFechaHoy());
+                return true;
+            } else if (id == R.id.nav_month) {
+                findViewById(R.id.tvFecha).setVisibility(View.VISIBLE);
+                findViewById(R.id.layoutFiltros).setVisibility(View.GONE);
+                tvFecha.setText("Actividades del Mes");
+                cargarTasksMes();
+                return true;
+            } else if (id == R.id.nav_week) {
+                findViewById(R.id.tvFecha).setVisibility(View.VISIBLE);
+                findViewById(R.id.layoutFiltros).setVisibility(View.GONE);
+                tvFecha.setText("Actividades de la Semana");
+                cargarTasksSemana();
+                return true;
+            } else if (id == R.id.nav_list) {
+                findViewById(R.id.tvFecha).setVisibility(View.GONE);
+                findViewById(R.id.layoutFiltros).setVisibility(View.GONE);
+                cargarTodasLasTasks();
+                return true;
+            }
+            return false;
         });
 
         // boton para informes
@@ -147,16 +167,11 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // boton modo oscuro
-        btnModoOscuro.setOnClickListener(v -> {
-            modoOscuro = !modoOscuro;
-            
-            // Guardar preferencia
-            android.content.SharedPreferences.Editor editor = getSharedPreferences("Configuracion", MODE_PRIVATE).edit();
-            editor.putBoolean("modoOscuro", modoOscuro);
-            editor.apply();
-
-            actualizarInterfazModoOscuro();
+        // boton configuracion
+        btnSettings.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+            intent.putExtra("rol", rol);
+            startActivity(intent);
         });
 
         // button para agregar tarea
@@ -165,26 +180,6 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("fecha", fechaActual);
             intent.putExtra("modoOscuro", modoOscuro);
             startActivity(intent);
-        });
-
-        btnSeleccionarFecha.setOnClickListener(v -> {
-            Calendar calendar = Calendar.getInstance();
-            int year = calendar.get(Calendar.YEAR);
-            int month = calendar.get(Calendar.MONTH);
-            int day = calendar.get(Calendar.DAY_OF_MONTH);
-            DatePickerDialog dialog = new DatePickerDialog(
-                            MainActivity.this,
-                            (view, selectedYear, selectedMonth, selectedDay) -> {
-                                fechaActual = String.format("%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay);
-                                cargarTasksPorFecha(fechaActual);
-                                // Actualizar fecha visual si es hoy, o mostrar la seleccionada
-                                Calendar sel = Calendar.getInstance();
-                                sel.set(selectedYear, selectedMonth, selectedDay);
-                                String friendlyDate = new SimpleDateFormat("EEEE, d 'de' MMMM", new Locale("es", "ES")).format(sel.getTime());
-                                tvFecha.setText(friendlyDate);
-                            },
-                            year, month, day);
-            dialog.show();
         });
     }
 
@@ -222,6 +217,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        
+        // Recargar modo oscuro por si se cambió en Settings
+        android.content.SharedPreferences prefs = getSharedPreferences("Configuracion", MODE_PRIVATE);
+        boolean nuevoModoOscuro = prefs.getBoolean("modoOscuro", false);
+        if (nuevoModoOscuro != modoOscuro) {
+            modoOscuro = nuevoModoOscuro;
+            // No llamamos a actualizarInterfazModoOscuro() porque el sistema ya lo maneja
+        }
+
         listaTasks.clear();
         // recarga tarea desde SQLite
         listaTasks.addAll(sqLiteHelper.obtenerTasksPorFecha(fechaActual));
@@ -246,30 +250,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void actualizarInterfazModoOscuro() {
-        View mainView = findViewById(R.id.main);
-        View topBar = findViewById(R.id.topBar);
-        View bottomActions = findViewById(R.id.bottomActions);
-        
-        if (modoOscuro) {
-            mainView.setBackgroundColor(getColor(R.color.dark_background));
-            topBar.setBackgroundColor(getColor(R.color.dark_card));
-            bottomActions.setBackgroundColor(getColor(R.color.dark_card));
-            tvBienvenida.setTextColor(getColor(R.color.dark_text));
-            tvFecha.setTextColor(getColor(R.color.text_secondary));
-            btnModoOscuro.setImageResource(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP ? android.R.drawable.ic_menu_day : android.R.drawable.ic_menu_compass);
-        } else {
-            mainView.setBackgroundColor(getColor(R.color.background));
-            topBar.setBackgroundColor(getColor(R.color.white));
-            bottomActions.setBackgroundColor(getColor(R.color.white));
-            tvBienvenida.setTextColor(getColor(R.color.text_primary));
-            tvFecha.setTextColor(getColor(R.color.text_secondary));
-            btnModoOscuro.setImageResource(android.R.drawable.ic_menu_compass);
-            aplicarColorPerfil();
-        }
-
-        taskAdapter = new TaskAdapter(this, listaTasks, rol, modoOscuro);
-        recyclerTasks.setAdapter(taskAdapter);
-        marcarBotonActivo(btnFiltroTodo);
+        // El sistema maneja esto automáticamente mediante AppCompatDelegate y recursos DayNight.
     }
 
     private void cargarTasksPorFecha(String fecha){
@@ -306,6 +287,50 @@ public class MainActivity extends AppCompatActivity {
                 recyclerTasks.setBackgroundColor(getColor(R.color.yellow_soft));
             }
         }
+    }
+
+    private void cargarTasksSemana() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+        String inicio = formatearFecha(cal);
+        cal.add(Calendar.DAY_OF_WEEK, 6);
+        String fin = formatearFecha(cal);
+        
+        listaTasks.clear();
+        // Ordenar por fecha descendente para ver lo más reciente primero
+        List<Task> tareas = sqLiteHelper.obtenerTasksPorRango(inicio, fin);
+        tareas.sort((t1, t2) -> t2.getFecha().compareTo(t1.getFecha()));
+        listaTasks.addAll(tareas);
+        taskAdapter.notifyDataSetChanged();
+    }
+
+    private void cargarTasksMes() {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        String inicio = formatearFecha(cal);
+        cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
+        String fin = formatearFecha(cal);
+
+        listaTasks.clear();
+        // Ordenar por fecha descendente
+        List<Task> tareas = sqLiteHelper.obtenerTasksPorRango(inicio, fin);
+        tareas.sort((t1, t2) -> t2.getFecha().compareTo(t1.getFecha()));
+        listaTasks.addAll(tareas);
+        taskAdapter.notifyDataSetChanged();
+    }
+
+    private void cargarTodasLasTasks() {
+        listaTasks.clear();
+        // Ordenar todas por fecha descendente
+        List<Task> tareas = sqLiteHelper.obtenerTasks();
+        tareas.sort((t1, t2) -> t2.getFecha().compareTo(t1.getFecha()));
+        listaTasks.addAll(tareas);
+        taskAdapter.notifyDataSetChanged();
+    }
+
+    private String formatearFecha(Calendar cal) {
+        return String.format(Locale.US, "%04d-%02d-%02d", 
+                cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH));
     }
 
     // inserta datos de ejemplo que aparecen al instalar la app
@@ -355,7 +380,7 @@ public class MainActivity extends AppCompatActivity {
 
         Calendar calendar = Calendar.getInstance();
         // devuelve fecha formateada YYYY-MM-DD
-        return String.format(
+        return String.format(Locale.US,
                 "%04d-%02d-%02d",
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH) + 1,

@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:paddingHorizontal="16dp"
-        android:background="@color/white"
+        android:background="@color/surface"
         android:elevation="2dp"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -36,11 +36,11 @@
             android:orientation="horizontal">
 
             <ImageButton
-                android:id="@+id/btnModoOscuro"
+                android:id="@+id/btnSettings"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@android:drawable/ic_menu_compass"
+                android:src="@android:drawable/ic_menu_preferences"
                 app:tint="@color/blue_primary" />
 
             <ImageButton
@@ -186,38 +186,19 @@
         android:layout_marginTop="16dp"
         android:paddingHorizontal="8dp"
         app:layout_constraintTop_toBottomOf="@id/layoutFiltros"
-        app:layout_constraintBottom_toTopOf="@id/bottomActions" />
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigation" />
 
-    <!-- Bottom Actions Area (instead of BottomNav for now to keep logic simple) -->
-    <LinearLayout
-        android:id="@+id/bottomActions"
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:background="@color/white"
-        android:elevation="8dp"
-        android:orientation="horizontal"
-        android:gravity="center"
-        app:layout_constraintBottom_toBottomOf="parent">
-
-        <Button
-            android:id="@+id/btnSeleccionarFecha"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/main_change_date"
-            android:textAllCaps="false"
-            android:backgroundTint="@color/blue_light"
-            android:textColor="@color/blue_primary"
-            android:layout_marginEnd="16dp"/>
-
-        <Button
-            android:id="@+id/btnCerrarSesion"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/main_exit"
-            android:textAllCaps="false"
-            android:backgroundTint="#FFEBEE"
-            android:textColor="#C62828"/>
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        android:background="@color/surface"
+        app:elevation="8dp"
+        app:menu="@menu/bottom_nav_menu"
+        app:labelVisibilityMode="labeled"
+        app:itemIconTint="@color/blue_primary"
+        app:itemTextColor="@color/blue_primary"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAgregar"
@@ -227,7 +208,7 @@
         android:src="@android:drawable/ic_input_add"
         app:tint="@color/white"
         app:backgroundTint="@color/blue_primary"
-        app:layout_constraintBottom_toTopOf="@id/bottomActions"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
         app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

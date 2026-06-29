@@ -55,6 +55,20 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
 
         Task task = listaTasks.get(position);
 
+        // LÓGICA DE CABECERA DE FECHA (SECCIÓN DE DÍAS)
+        if (position == 0) {
+            holder.tvHeaderFecha.setVisibility(View.VISIBLE);
+            holder.tvHeaderFecha.setText(formatearFechaHeader(task.getFecha()));
+        } else {
+            Task anterior = listaTasks.get(position - 1);
+            if (task.getFecha().equals(anterior.getFecha())) {
+                holder.tvHeaderFecha.setVisibility(View.GONE);
+            } else {
+                holder.tvHeaderFecha.setVisibility(View.VISIBLE);
+                holder.tvHeaderFecha.setText(formatearFechaHeader(task.getFecha()));
+            }
+        }
+
         holder.tvTitulo.setText(task.getTitulo());
         holder.tvDescripcion.setText(task.getDescripcion());
         holder.tvHora.setText(task.getHora());
@@ -62,7 +76,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         // SELECCIÓN DE PICTOGRAMA (HU 8)
         String picto = task.getPictograma();
         if (picto != null && !picto.isEmpty()) {
-            // Si hay un pictograma guardado, lo buscamos en los recursos
+            // Intentar cargar como recurso primero
             int resId = context.getResources().getIdentifier(
                     picto,
                     "drawable",
@@ -71,15 +85,28 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             if (resId != 0) {
                 holder.imgTask.setImageResource(resId);
             } else {
-                asignarPictogramaAutomatico(holder, task.getTitulo().toLowerCase());
+                // Si no es un recurso, buscar en la tabla de personalizados
+                String rutaPersonalizada = sqLiteHelper.obtenerRutaPictograma(picto);
+                if (rutaPersonalizada != null) {
+                    android.graphics.Bitmap bitmap = android.graphics.BitmapFactory.decodeFile(rutaPersonalizada);
+                    if (bitmap != null) {
+                        holder.imgTask.setImageBitmap(bitmap);
+                    } else {
+                        asignarPictogramaAutomatico(holder, task.getTitulo().toLowerCase());
+                    }
+                } else {
+                    asignarPictogramaAutomatico(holder, task.getTitulo().toLowerCase());
+                }
             }
         } else {
             // Si no hay pictograma guardado, usamos la lógica automática
             asignarPictogramaAutomatico(holder, task.getTitulo().toLowerCase());
         }
 
-        // checkbox de completado
+        // checkbox de completado - RESETEAR LISTENER PARA EVITAR ERRORES DE RECICLAJE
+        holder.checkCompletada.setOnCheckedChangeListener(null); 
         holder.checkCompletada.setChecked(task.getCompletada() == 1);
+
         if(task.getCompletada() == 1){
             holder.cardTask.setAlpha(0.5f);
         } else {
@@ -96,39 +123,32 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
                     } else {
                         holder.cardTask.setAlpha(1f);
                     }
+                    
+                    // Notificar al widget para que se actualice
+                    Intent intentUpdate = new Intent(context, com.example.micalendario.widgets.NextTaskWidget.class);
+                    intentUpdate.setAction(android.appwidget.AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+                    int[] ids = android.appwidget.AppWidgetManager.getInstance(context)
+                            .getAppWidgetIds(new android.content.ComponentName(context, com.example.micalendario.widgets.NextTaskWidget.class));
+                    intentUpdate.putExtra(android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+                    context.sendBroadcast(intentUpdate);
                 });
 
-        // condicional para que funcione el modo oscuro
-        if(modoOscuro){
-            holder.cardTask.setCardBackgroundColor(
-                    context.getColor(R.color.dark_card)
-            );
-            holder.tvTitulo.setTextColor(
-                    context.getColor(R.color.dark_text)
-            );
-            holder.tvDescripcion.setTextColor(
-                    context.getColor(R.color.dark_text)
-            );
-            holder.tvHora.setTextColor(
-                    context.getColor(R.color.white)
-            );
+        // COLORES POR PERIODO (HU 1) - Siempre visibles para ayudar a la rutina
+        String periodo = task.getPeriodo().toLowerCase();
+        if (periodo.contains("mañana")) {
+            holder.cardTask.setCardBackgroundColor(context.getColor(R.color.morning_color));
+        } else if (periodo.contains("tarde")) {
+            holder.cardTask.setCardBackgroundColor(context.getColor(R.color.afternoon_color));
+        } else if (periodo.contains("noche")) {
+            holder.cardTask.setCardBackgroundColor(context.getColor(R.color.night_color));
         } else {
-            // COLORES POR PERIODO
-            String periodo = task.getPeriodo().toLowerCase();
-            if(periodo.contains("mañana")){
-                holder.cardTask.setCardBackgroundColor(
-                        context.getColor(R.color.morning_color)
-                );
-            } else if(periodo.contains("tarde")){
-                holder.cardTask.setCardBackgroundColor(
-                        context.getColor(R.color.afternoon_color)
-                );
-            } else if(periodo.contains("noche")){
-                holder.cardTask.setCardBackgroundColor(
-                        context.getColor(R.color.night_color)
-                );
-            }
+            holder.cardTask.setCardBackgroundColor(context.getColor(R.color.surface));
         }
+
+        // Colores de texto adaptativos
+        holder.tvTitulo.setTextColor(context.getColor(R.color.text_primary));
+        holder.tvDescripcion.setTextColor(context.getColor(R.color.text_secondary));
+        holder.tvHora.setTextColor(context.getColor(R.color.text_primary));
 
 
         // al momento de presionar las actividades, debe salir aqui
@@ -217,6 +237,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         TextView tvTitulo;
         TextView tvDescripcion;
         TextView tvHora;
+        TextView tvHeaderFecha;
         ImageView imgTask;
         MaterialCardView cardTask;
         CheckBox checkCompletada;
@@ -225,9 +246,22 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             tvTitulo = itemView.findViewById(R.id.tvTituloTask);
             tvDescripcion = itemView.findViewById(R.id.tvDescripcionTask);
             tvHora = itemView.findViewById(R.id.tvHoraTask);
+            tvHeaderFecha = itemView.findViewById(R.id.tvHeaderFecha);
             imgTask = itemView.findViewById(R.id.imgTask);
             cardTask = itemView.findViewById(R.id.cardTask);
             checkCompletada = itemView.findViewById(R.id.checkCompletada);
+        }
+    }
+
+    private String formatearFechaHeader(String fecha) {
+        try {
+            java.text.SimpleDateFormat sdfInput = new java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US);
+            java.util.Date date = sdfInput.parse(fecha);
+            java.text.SimpleDateFormat sdfOutput = new java.text.SimpleDateFormat("EEEE, d 'de' MMMM", new java.util.Locale("es", "ES"));
+            String friendlyDate = sdfOutput.format(date);
+            return friendlyDate.substring(0, 1).toUpperCase() + friendlyDate.substring(1);
+        } catch (Exception e) {
+            return fecha;
         }
     }
 }

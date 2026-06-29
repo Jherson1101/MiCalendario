@@ -12,42 +12,192 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:padding="20dp">
 
+        <!-- Header -->
         <RelativeLayout
+            android:id="@+id/topBarReporte"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp">
+            android:layout_marginBottom="24dp"
+            android:paddingTop="24dp">
 
             <ImageButton
                 android:id="@+id/btnBackReporte"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
+                android:layout_centerVertical="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@android:drawable/ic_menu_revert"
                 android:contentDescription="@string/profile_back_description"
+                android:src="@android:drawable/ic_menu_revert"
                 app:tint="@color/blue_primary" />
 
             <TextView
                 android:id="@+id/tvTituloInforme"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:text="@string/report_title"
-                android:textSize="22sp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="8dp"
+                android:layout_toEndOf="@id/btnBackReporte"
                 android:fontFamily="sans-serif-black"
-                android:textColor="@color/blue_primary"/>
+                android:text="@string/report_title"
+                android:textColor="@color/blue_primary"
+                android:textSize="26sp" />
         </RelativeLayout>
 
-        <!-- Selector de Rango -->
+        <!-- Selector de Rango (Pills) -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="24dp"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="20dp"
             app:cardElevation="0dp"
-            app:strokeWidth="1dp"
-            app:strokeColor="#F0F0F0"
-            android:layout_marginBottom="20dp">
+            app:strokeColor="#E0E0E0"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="8dp">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnHoy"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="4dp"
+                    android:layout_weight="1"
+                    android:text="@string/report_range_today"
+                    android:textSize="12sp"
+                    app:cornerRadius="16dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSemana"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="4dp"
+                    android:layout_weight="1"
+                    android:text="@string/report_range_week"
+                    android:textSize="12sp"
+                    app:cornerRadius="16dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnMes"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/report_range_month"
+                    android:textSize="12sp"
+                    app:cornerRadius="16dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Tarjetas de Estadísticas Rápidas -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                app:cardBackgroundColor="#E8F5E9"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@android:drawable/checkbox_on_background"
+                        android:contentDescription="@null"
+                        app:tint="#2E7D32" />
+
+                    <TextView
+                        android:id="@+id/tvCompletadas"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="sans-serif-black"
+                        android:text="@string/report_completed_count"
+                        android:textColor="#2E7D32"
+                        android:textSize="24sp"
+                        tools:text="3" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/report_status_achieved"
+                        android:textColor="#2E7D32"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                app:cardBackgroundColor="#FFF3E0"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@android:drawable/ic_menu_recent_history"
+                        android:contentDescription="@null"
+                        app:tint="#EF6C00" />
+
+                    <TextView
+                        android:id="@+id/tvPendientes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="sans-serif-black"
+                        android:text="@string/report_pending_count"
+                        android:textColor="#EF6C00"
+                        android:textSize="24sp"
+                        tools:text="2" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/report_status_pending"
+                        android:textColor="#EF6C00"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+
+        <!-- Nivel de Independencia -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/surface">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -56,122 +206,48 @@
                 android:padding="20dp">
 
                 <TextView
-                    android:id="@+id/tvRangoTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/report_range_title"
-                    android:textSize="16sp"
-                    android:fontFamily="sans-serif-medium"
-                    android:textColor="@color/text_primary"
-                    android:layout_marginBottom="12dp"/>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnHoy"
-                        style="@style/Widget.Material3.Button.TonalButton"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/report_range_today"
-                        android:textSize="12sp"
-                        app:cornerRadius="12dp"/>
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnSemana"
-                        style="@style/Widget.Material3.Button.TonalButton"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/report_range_week"
-                        android:textSize="12sp"
-                        app:cornerRadius="12dp"/>
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnMes"
-                        style="@style/Widget.Material3.Button.TonalButton"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/report_range_month"
-                        android:textSize="12sp"
-                        app:cornerRadius="12dp"/>
-                </LinearLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Tarjeta de Resumen -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="0dp"
-            app:strokeWidth="1dp"
-            app:strokeColor="#F0F0F0"
-            android:layout_marginBottom="20dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="24dp">
-
-                <TextView
                     android:id="@+id/tvSummaryTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/report_summary_title"
-                    android:textSize="18sp"
                     android:fontFamily="sans-serif-medium"
+                    android:text="@string/report_summary_label"
                     android:textColor="@color/text_primary"
-                    android:layout_marginBottom="16dp"/>
+                    android:textSize="16sp" />
 
-                <TextView
-                    android:id="@+id/tvCompletadas"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Actividades Completadas: 0"
-                    android:textSize="15sp"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginBottom="8dp"/>
-
-                <TextView
-                    android:id="@+id/tvPendientes"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Actividades Pendientes: 0"
-                    android:textSize="15sp"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginBottom="16dp"/>
-
-                <View
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="#F0F0F0"
-                    android:layout_marginBottom="16dp"/>
-
-                <TextView
-                    android:id="@+id/tvPorcentaje"
-                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Nivel de Independencia: 0%"
-                    android:textSize="16sp"
-                    android:fontFamily="sans-serif-black"
-                    android:textColor="@color/blue_primary"
-                    android:layout_marginBottom="12dp"/>
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/report_independence_label"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/tvPorcentaje"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:fontFamily="sans-serif-black"
+                        android:text="@string/report_percentage_value"
+                        android:textColor="@color/blue_primary"
+                        android:textSize="18sp"
+                        tools:text="75%" />
+                </RelativeLayout>
 
                 <com.google.android.material.progressindicator.LinearProgressIndicator
                     android:id="@+id/progressBarInforme"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:progress="0"
                     app:indicatorColor="@color/blue_primary"
-                    app:trackColor="@color/blue_light"
-                    app:trackCornerRadius="8dp"
-                    app:trackThickness="12dp"
-                    android:progress="0"/>
+                    app:trackColor="#E3F2FD"
+                    app:trackCornerRadius="10dp"
+                    app:trackThickness="16dp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -179,50 +255,45 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
             app:cardCornerRadius="24dp"
             app:cardElevation="0dp"
-            app:strokeWidth="1dp"
             app:strokeColor="#F0F0F0"
-            android:layout_marginBottom="24dp">
+            app:strokeWidth="1dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="24dp">
+                android:padding="20dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/report_chart_title"
-                    android:textSize="18sp"
                     android:fontFamily="sans-serif-medium"
+                    android:text="@string/report_chart_title"
                     android:textColor="@color/text_primary"
-                    android:layout_marginBottom="16dp"/>
+                    android:textSize="16sp" />
 
                 <com.github.mikephil.charting.charts.PieChart
                     android:id="@+id/pieChart"
                     android:layout_width="match_parent"
-                    android:layout_height="250dp"/>
+                    android:layout_height="220dp"
+                    android:layout_marginTop="12dp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnVolver"
             android:layout_width="match_parent"
             android:layout_height="60dp"
+            android:backgroundTint="@color/blue_primary"
+            android:elevation="4dp"
+            android:fontFamily="sans-serif-medium"
             android:text="@string/report_back_button"
             android:textAllCaps="false"
-            android:textSize="18sp"
-            android:fontFamily="sans-serif-medium"
-            app:cornerRadius="18dp"
-            android:backgroundTint="@color/blue_primary"
-            android:elevation="4dp"/>
+            android:textSize="16sp"
+            app:cornerRadius="18dp" />
 
     </LinearLayout>
 </ScrollView>

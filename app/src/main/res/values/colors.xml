@@ -1,37 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <!-- color principal y variantes -->
+    <!-- Colores Base -->
     <color name="blue_primary">#4A90E2</color>
     <color name="blue_dark">#357ABD</color>
     <color name="blue_light">#E3F2FD</color>
     <color name="blue_accent">#007AFF</color>
 
-    <!-- fondos -->
+    <!-- Fondos y Superficies -->
     <color name="background">#F8FAFF</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="on_surface">#222222</color>
     <color name="white">#FFFFFF</color>
 
-    <!-- tarjetas por periodo con tonos más modernos -->
-    <color name="morning_color">#FFF9E1</color>
-    <color name="afternoon_color">#E1F5FE</color>
-    <color name="night_color">#E8EAF6</color>
+    <!-- Tarjetas por periodo (Colores más definidos para HU 1) -->
+    <color name="morning_color">#FFF9C4</color>   <!-- Amarillo sol (Mañana) -->
+    <color name="afternoon_color">#B3E5FC</color> <!-- Azul cielo claro (Tarde) -->
+    <color name="night_color">#D1C4E9</color>     <!-- Lavanda/Lila (Noche) -->
 
-    <!-- modo oscuro -->
-    <color name="dark_background">#121212</color>
-    <color name="dark_card">#1E1E1E</color>
-    <color name="dark_text">#FFFFFF</color>
-
-    <!-- colores de estado -->
+    <!-- Colores de estado -->
     <color name="success_green">#4CAF50</color>
     <color name="error_red">#FF5252</color>
 
-    <!-- colores suaves -->
+    <!-- Colores suaves -->
     <color name="blue_soft">#DCE8FF</color>
     <color name="green_soft">#DDF5E3</color>
     <color name="yellow_soft">#FFF6D6</color>
 
-    <!-- texto -->
+    <!-- Texto -->
     <color name="text_primary">#222222</color>
     <color name="text_secondary">#666666</color>
-
 </resources>

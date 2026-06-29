@@ -85,14 +85,7 @@ public class PerfilActivity extends AppCompatActivity {
     }
 
     private void aplicarModoOscuro() {
-        if (modoOscuro) {
-            findViewById(R.id.main_perfil).setBackgroundColor(getColor(R.color.dark_background));
-            tvNombre.setTextColor(getColor(R.color.dark_text));
-            tvEdad.setTextColor(getColor(R.color.dark_text));
-            tvColor.setTextColor(getColor(R.color.dark_text));
-            ((TextView)findViewById(R.id.tvTituloPerfil)).setTextColor(getColor(R.color.dark_text));
-            ((TextView)findViewById(R.id.tvEligeColor)).setTextColor(getColor(R.color.dark_text));
-        }
+        // El sistema maneja esto automáticamente mediante recursos DayNight
     }
 
     private void cargarPerfil(){
